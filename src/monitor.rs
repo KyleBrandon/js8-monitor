@@ -1,3 +1,4 @@
+use std::io;
 use std::net::UdpSocket;
 
 pub struct Monitor {
@@ -12,17 +13,29 @@ impl Monitor {
         }
     }
 
+    fn read_from(&self, socket: &UdpSocket, buffer: &mut [u8]) -> io::Result<String> {
+        match socket.recv_from(buffer) {
+            Ok((_, _)) => {
+                let string = String::from_utf8_lossy(&buffer);
+                println!("Received: {}", string.to_string());
+                Ok("".to_string())
+            },
+            Err(e) => {
+                Err(e)
+            },
+        }
+    }
+
     pub fn run(self) {
-        dbg!("Listening on: {}", &self.address);
+        println!("Listening on: {}", self.address);
 
         let mut buffer = [0; 1024];
 
-        let listener = UdpSocket::bind(&self.address).unwrap();
+        let socket = UdpSocket::bind(&self.address).unwrap();
         loop {
-            match listener.recv_from(&mut buffer) {
-                Ok((_, _)) => {
-                    println!("Received: {}", String::from_utf8_lossy(&buffer));
-                }
+            match self.read_from(&socket, &mut buffer) {
+                Ok(string) => {
+                },
                 Err(e) => {
                     dbg!("Error reading from socket: {}", e);
                 },
