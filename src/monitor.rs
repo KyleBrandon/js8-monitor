@@ -1,4 +1,4 @@
-use std::io;
+use std::io::Result;
 use std::net::UdpSocket;
 use crate::message::Message;
 
@@ -11,15 +11,15 @@ impl Monitor {
 
     pub fn new(address: String) -> Self {
         Self {
-            address
+            address,
         }
     }
 
-    fn read_from(&self, socket: &UdpSocket) -> io::Result<Message> {
+    fn read_from(&self, socket: &UdpSocket) -> Result<Message> {
         let mut buffer = [0; 1024];
         match socket.recv_from(&mut buffer) {
-            Ok((_, _)) => {
-                Ok(Message::new(buffer))
+            Ok((bytes_read, _)) => {
+                Ok(Message::new(&buffer[0..bytes_read]))
             },
             Err(e) => {
                 Err(e)
