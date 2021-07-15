@@ -1,3 +1,5 @@
+use log::{error, info, warn, trace, debug};
+
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
 
@@ -83,6 +85,47 @@ struct Ping {
     id: String,
 }
  
+#[derive(Debug, Serialize, Deserialize)]
+struct StationStatus {
+    #[serde(rename="DIAL")]
+    dial: u64,
+    #[serde(rename="FREQ")]
+    freq: u64,
+    #[serde(rename="OFFSET")]
+    offset: i32,
+    #[serde(rename="SELECTED")]
+    selected: String,
+    #[serde(rename="SPEED")]
+    speed: u8,
+    #[serde(rename="_ID")]
+    id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Close {
+    #[serde(rename="_ID")]
+    id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct RigPtt {
+    #[serde(rename="PTT")]
+    ptt: bool,
+    #[serde(rename="UTC")]
+    utc: u64,
+    #[serde(rename="_ID")]
+    id: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct TxFrame {
+    #[serde(rename="TONES")]
+    tones: Vec<u8>,
+    #[serde(rename="_ID")]
+    id: i64,
+}
+
+ 
 pub struct Message {
     msg_type: String,
     msg_value: String,
@@ -94,28 +137,38 @@ impl Message {
 
     pub fn new(buffer: &[u8]) -> Self {
         let msg: Value = serde_json::from_slice(&buffer).unwrap();
+        trace!(target: "monitor-trace", "{}", msg);
+
         let msg_type = msg["type"].to_string();
 
         match msg_type.as_str() {
             r#""PING""# => {
                 // deserialize the PING message
                 let ping: Ping = serde_json::from_str(&msg["params"].to_string()).unwrap();
-                println!("{:?}", ping);
             }
             r#""RX.DIRECTED""# => {
                 let rx_directed: RxDirected = serde_json::from_str(&msg["params"].to_string()).unwrap();
-                println!("{:?}", rx_directed);
             }
             r#""RX.SPOT""# => {
                 let rx_spot: RxSpot = serde_json::from_str(&msg["params"].to_string()).unwrap();
-                println!("{:?}", rx_spot);
             }
             r#""RX.ACTIVITY""# => {
                 let rx_activity: RxActivity = serde_json::from_str(&msg["params"].to_string()).unwrap();
-                println!("{:?}", rx_activity);
+            }
+            r#""STATION.STATUS""# => {
+                let station_status: StationStatus = serde_json::from_str(&msg["params"].to_string()).unwrap();
+            }
+            r#""RIG.PTT""# => {
+                let rig_ptt: RigPtt = serde_json::from_str(&msg["params"].to_string()).unwrap();
+            }
+            r#""TX.FRAME""# => {
+                let tx_frame: TxFrame = serde_json::from_str(&msg["params"].to_string()).unwrap();
+            }
+            r#""CLOSE""# => {
+                let close: Close = serde_json::from_str(&msg["params"].to_string()).unwrap();
             }
             _ => {
-                println!("{}", msg);
+                error!("Unknown JS8Call message: {}", msg);
             }
         }
 
