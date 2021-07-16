@@ -1,8 +1,4 @@
 use monitor::Monitor;
-use log::LevelFilter;
-use log4rs::append::file::FileAppender;
-use log4rs::config::{Appender, Root};
-use log4rs::Config;
 
 pub mod monitor;
 pub mod message;

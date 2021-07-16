@@ -133,12 +133,9 @@ pub struct Message {
 }
 
 impl Message {
-    
+    pub fn new(msg: &Value) -> Self {
 
-    pub fn new(buffer: &[u8]) -> Self {
-        let msg: Value = serde_json::from_slice(&buffer).unwrap();
         trace!(target: "monitor-trace", "{}", msg);
-
         let msg_type = msg["type"].to_string();
 
         match msg_type.as_str() {

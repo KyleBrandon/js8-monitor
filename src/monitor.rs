@@ -1,7 +1,7 @@
 use std::io::Result;
 use std::net::UdpSocket;
 use crate::message::Message;
-
+use serde_json::Value;
 
 pub struct Monitor {
     address: String,
@@ -19,7 +19,9 @@ impl Monitor {
         let mut buffer = [0; 1024];
         match socket.recv_from(&mut buffer) {
             Ok((bytes_read, _)) => {
-                Ok(Message::new(&buffer[0..bytes_read]))
+                let msg: Value = serde_json::from_slice(&buffer[0..bytes_read])
+                    .unwrap();
+                Ok(Message::new(&msg))
             },
             Err(e) => {
                 Err(e)
