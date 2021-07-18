@@ -1,6 +1,7 @@
 use std::io::Result;
 use std::net::UdpSocket;
-use crate::message::Message;
+use std::str;
+use crate::message::Message2;
 use serde_json::Value;
 
 pub struct Monitor {
@@ -15,13 +16,16 @@ impl Monitor {
         }
     }
 
-    fn read_from(&self, socket: &UdpSocket) -> Result<Message> {
+    // TODO: Update the lifetime of the buffer that's read to keep it persistent
+    fn read_from(&self, socket: &UdpSocket) -> Result<Message2> {
         let mut buffer = [0; 1024];
         match socket.recv_from(&mut buffer) {
             Ok((bytes_read, _)) => {
-                let msg: Value = serde_json::from_slice(&buffer[0..bytes_read])
-                    .unwrap();
-                Ok(Message::new(&msg))
+                // TODO: change this to use '?' and create a MonitorError
+                let new_msg = str::from_utf8(&buffer).unwrap();
+
+                // TODO: Update to Message::try_from(&buffer[..bytes_read])
+                Ok(Message2::new(&new_msg))
             },
             Err(e) => {
                 Err(e)

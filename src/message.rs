@@ -1,5 +1,4 @@
 use log::{error, info, warn, trace, debug};
-
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
 
@@ -125,16 +124,18 @@ struct TxFrame {
     id: i64,
 }
 
+
  
-pub struct Message {
+pub struct Message2 {
     msg_type: String,
     msg_value: String,
     msg_params: String,
 }
 
-impl Message {
-    pub fn new(msg: &Value) -> Self {
+impl Message2 {
+    pub fn new(msg: &str) -> Self {
 
+        let msg: Value = serde_json::from_str(msg).unwrap();
         trace!(target: "monitor-trace", "{}", msg);
         let msg_type = msg["type"].to_string();
 
