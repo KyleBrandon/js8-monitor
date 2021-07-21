@@ -1,4 +1,5 @@
-use crate::js8call::{ParseError, Event};
+use crate::js8call::Event;
+use log::{error};
 use std::convert::TryFrom;
 use std::net::UdpSocket;
 
@@ -23,11 +24,17 @@ impl Monitor {
             // TODO: Update the lifetime of the buffer that's read to keep it persistent
             let mut buffer = [0; 1024];
             match socket.recv_from(&mut buffer) {
-                Ok((bytes_read, _)) => {
+                Ok((_, _)) => {
                     //trace!(target: "monitor-trace", "Message received");
-                    let event = match Event::try_from(&buffer[..]) {
-                        Ok(_) => unimplemented!(),
-                        Err(e) => unimplemented!(),
+                    let _event = match Event::try_from(&buffer[..]) {
+                        Ok(_) => {
+                            unimplemented!();
+
+                        },
+                        Err(e) => {
+                            // TODO: Try to log the JSON that was in error
+                            error!("Invalid message read from JS8Call: {}", e);
+                        },
                     };
 
                     // TODO do something with Event
@@ -39,7 +46,3 @@ impl Monitor {
         }
     }
 }
-
-
-
-struct MonitorError;

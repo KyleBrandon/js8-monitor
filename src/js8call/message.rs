@@ -2,27 +2,27 @@ use std::str::FromStr;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
 pub enum Message {
-    PING,
-    RX_DIRECTED,
-    RX_SPOT,
-    RX_ACTIVITY,
-    STATION_STATUS,
-    RIG_PTT,
-    TX_FRAME,
-    CLOSE,
+    Ping,
+    RxDirected,
+    RxSpot,
+    RxActivity,
+    StationStatus,
+    RigPtt,
+    TxFrame,
+    Close,
 }
 
 impl Message {
     fn message(&self) -> &str {
         match self {
-            Self::PING => "Ping",
-            Self::RX_DIRECTED => "RX Directed",
-            Self::RX_SPOT => "RX Spot",
-            Self::RX_ACTIVITY => "RX Activity",
-            Self::STATION_STATUS => "Station Status",
-            Self::RIG_PTT => "Rig PTT",
-            Self::TX_FRAME => "TX Frame",
-            Self::CLOSE => "Close", 
+            Self::Ping => "Ping",
+            Self::RxDirected => "RX Directed",
+            Self::RxSpot => "RX Spot",
+            Self::RxActivity => "RX Activity",
+            Self::StationStatus => "Station Status",
+            Self::RigPtt => "Rig PTT",
+            Self::TxFrame => "TX Frame",
+            Self::Close => "Close", 
         }
     }
 }
@@ -32,14 +32,14 @@ impl FromStr for Message {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "PING" => Ok(Self::PING),
-            "RX.DIRECTED" => Ok(Self::RX_DIRECTED),
-            "RX.SPOT" => Ok(Self::RX_SPOT),
-            "RX.ACTIVITY" => Ok(Self::RX_ACTIVITY),
-            "STATION_STATUS" => Ok(Self::STATION_STATUS),
-            "RIG.PTT" => Ok(Self::RIG_PTT),
-            "TX.FRAME" => Ok(Self::TX_FRAME),
-            "CLOSE" => Ok(Self::CLOSE),
+            "PING" => Ok(Self::Ping),
+            "RX.DIRECTED" => Ok(Self::RxDirected),
+            "RX.SPOT" => Ok(Self::RxSpot),
+            "RX.ACTIVITY" => Ok(Self::RxActivity),
+            "STATION_STATUS" => Ok(Self::StationStatus),
+            "RIG.PTT" => Ok(Self::RigPtt),
+            "TX.FRAME" => Ok(Self::TxFrame),
+            "CLOSE" => Ok(Self::Close),
             _ => Err(MessageError)
         }
     }
