@@ -1,5 +1,7 @@
+use monitor::Monitor;
+
+pub mod js8call;
 pub mod monitor;
-pub mod message;
 
 #[cfg(test)]
 mod tests {
