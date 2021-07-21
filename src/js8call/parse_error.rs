@@ -1,4 +1,3 @@
-use super::message::MessageError;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str::Utf8Error;
 
@@ -13,12 +12,6 @@ impl ParseError {
             Self::InvalidEvent => "Invalid Event",
             Self::InvalidMessage => "Invalid Message",
         }
-    }
-}
-
-impl From<MessageError> for ParseError {
-    fn from(_: MessageError) -> Self {
-        Self::InvalidMessage
     }
 }
 

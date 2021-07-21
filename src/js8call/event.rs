@@ -1,4 +1,4 @@
-use super::message::Message;
+use super::message_type::MessageType;
 use super::parse_error::ParseError;
 use serde_json::Value;
 use std::convert::TryFrom;
@@ -14,7 +14,7 @@ use std::str;
 #[derive(Debug)]
 pub struct Event<'buf> {
     raw_event: &'buf str,
-    message: Message,
+    message: MessageType,
 }
 
 impl<'buf> TryFrom<&'buf [u8]> for Event<'buf> {
@@ -28,7 +28,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Event<'buf> {
 
         let msg_json: Value = serde_json::from_str(raw_event)?;
         let event_type = msg_json["type"].to_string();
-        let message: Message = event_type.parse()?;
+        let message: MessageType = event_type.parse()?;
 
         Ok(Self {
             raw_event,

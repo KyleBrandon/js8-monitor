@@ -1,7 +1,8 @@
+use super::parse_error::ParseError;
 use std::str::FromStr;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
-pub enum Message {
+pub enum MessageType {
     Ping,
     RxDirected,
     RxSpot,
@@ -12,7 +13,7 @@ pub enum Message {
     Close,
 }
 
-impl Message {
+impl MessageType {
     fn message(&self) -> &str {
         match self {
             Self::Ping => "Ping",
@@ -27,8 +28,8 @@ impl Message {
     }
 }
 
-impl FromStr for Message {
-    type Err = MessageError;
+impl FromStr for MessageType {
+    type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -40,22 +41,20 @@ impl FromStr for Message {
             "RIG.PTT" => Ok(Self::RigPtt),
             "TX.FRAME" => Ok(Self::TxFrame),
             "CLOSE" => Ok(Self::Close),
-            _ => Err(MessageError)
+            _ => Err(ParseError::InvalidMessage)
         }
     }
 }
 
-impl Display for Message {
+impl Display for MessageType {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
         write!(f, "{}", self.message())
     }
 
 }
 
-impl Debug for Message {
+impl Debug for MessageType {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
         write!(f, "{}", self.message())
     }
 }
-
-pub struct MessageError;
