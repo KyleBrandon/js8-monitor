@@ -4,6 +4,7 @@ use std::str::Utf8Error;
 pub enum ParseError {
     InvalidEvent,
     InvalidMessage,
+    InvalidMessageType
 }
 
 impl ParseError {
@@ -11,6 +12,7 @@ impl ParseError {
         match self {
             Self::InvalidEvent => "Invalid Event",
             Self::InvalidMessage => "Invalid Message",
+            Self::InvalidMessageType => "Invalid Message Type",
         }
     }
 }

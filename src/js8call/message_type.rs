@@ -28,6 +28,12 @@ impl MessageType {
     }
 }
 
+impl PartialEq for MessageType {
+    fn eq(&self, other: &Self) -> bool {
+        self.message() == other.message()
+    }
+}
+
 impl FromStr for MessageType {
     type Err = ParseError;
 

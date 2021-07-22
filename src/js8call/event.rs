@@ -9,12 +9,24 @@ use std::str;
 ///     This structure is used to represent an event from JS8Call.
 /// 
 /// members:
-///     raw_event   -   this is a string representation of the event JSON.
-///     message     -   this is the type of JS8Call message that was triggered.
+///     raw_event       -   this is a string representation of the event JSON.
+///     json            -   this is a serde_json structure
+///     message_type    -   this is the type of JS8Call message that was triggered.
 #[derive(Debug)]
 pub struct Event<'buf> {
     raw_event: &'buf str,
-    message: MessageType,
+    json: Value,
+    message_type: MessageType,
+}
+
+impl<'buf> Event<'buf> {
+    pub fn message_type(&self) -> &MessageType {
+        &self.message_type
+    }
+
+    pub fn json(&self) -> &Value {
+        &self.json
+    }
 }
 
 impl<'buf> TryFrom<&'buf [u8]> for Event<'buf> {
@@ -26,14 +38,14 @@ impl<'buf> TryFrom<&'buf [u8]> for Event<'buf> {
     fn try_from(buf: &'buf [u8]) -> Result<Event<'buf>, Self::Error> {
         let raw_event = str::from_utf8(buf)?;
 
-        let msg_json: Value = serde_json::from_str(raw_event)?;
-        let event_type = msg_json["type"].to_string();
-        let message: MessageType = event_type.parse()?;
+        let json: Value = serde_json::from_str(raw_event)?;
+        let event_type = json["type"].to_string();
+        let message_type: MessageType = event_type.parse()?;
 
         Ok(Self {
             raw_event,
-            message,
+            json,
+            message_type,
         })
     }
-
 }
