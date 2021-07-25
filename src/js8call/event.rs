@@ -1,5 +1,5 @@
-use super::message_type::MessageType;
 use super::parse_error::ParseError;
+use crate::js8call::message::message_type::MessageType;
 //use log::trace;
 use serde_json::Value;
 use std::convert::TryFrom;

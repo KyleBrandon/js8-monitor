@@ -1,5 +1,5 @@
 use crate::js8call::Event;
-use crate::js8call::message_type::MessageType;
+use crate::js8call::message::message_type::MessageType;
 use crate::js8call::message::rx_spot::RxSpot;
 use log::{error, trace};
 use std::convert::TryFrom;
