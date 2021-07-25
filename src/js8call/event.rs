@@ -1,5 +1,6 @@
 use super::message_type::MessageType;
 use super::parse_error::ParseError;
+//use log::trace;
 use serde_json::Value;
 use std::convert::TryFrom;
 use std::fmt::Debug;
@@ -37,7 +38,6 @@ impl<'buf> TryFrom<&'buf [u8]> for Event<'buf> {
     /// 
     fn try_from(buf: &'buf [u8]) -> Result<Event<'buf>, Self::Error> {
         let raw_event = str::from_utf8(buf)?;
-
         let json: Value = serde_json::from_str(raw_event)?;
         let event_type = json["type"].to_string();
         let message_type: MessageType = event_type.parse()?;

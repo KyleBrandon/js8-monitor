@@ -39,14 +39,14 @@ impl FromStr for MessageType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "PING" => Ok(Self::Ping),
-            "RX.DIRECTED" => Ok(Self::RxDirected),
-            "RX.SPOT" => Ok(Self::RxSpot),
-            "RX.ACTIVITY" => Ok(Self::RxActivity),
-            "STATION_STATUS" => Ok(Self::StationStatus),
-            "RIG.PTT" => Ok(Self::RigPtt),
-            "TX.FRAME" => Ok(Self::TxFrame),
-            "CLOSE" => Ok(Self::Close),
+            "\"PING\"" => Ok(Self::Ping),
+            "\"RX.DIRECTED\"" => Ok(Self::RxDirected),
+            "\"RX.SPOT\"" => Ok(Self::RxSpot),
+            "\"RX.ACTIVITY\"" => Ok(Self::RxActivity),
+            "\"STATION_STATUS\"" => Ok(Self::StationStatus),
+            "\"RIG.PTT\"" => Ok(Self::RigPtt),
+            "\"TX.FRAME\"" => Ok(Self::TxFrame),
+            "\"CLOSE\"" => Ok(Self::Close),
             _ => Err(ParseError::InvalidMessage)
         }
     }

@@ -1,6 +1,7 @@
 use crate::js8call::Event;
+use crate::js8call::message_type::MessageType;
 use crate::js8call::message::rx_spot::RxSpot;
-use log::{error};
+use log::{error, trace};
 use std::convert::TryFrom;
 use std::net::UdpSocket;
 
@@ -24,20 +25,23 @@ impl Monitor {
             // TODO: Update the lifetime of the buffer that's read to keep it persistent
             let mut buffer = [0; 1024];
             match socket.recv_from(&mut buffer) {
-                Ok((_, _)) => {
+                Ok((len, _)) => {
                     //trace!(target: "monitor-trace", "Message received");
-                    match Event::try_from(&buffer[..]) {
+                    match Event::try_from(&buffer[..len]) {
                         Ok(event) => {
 
-                            match RxSpot::try_from(event) {
-                                Ok(_rx_spot) => {
+                            if *event.message_type() == MessageType::RxSpot {
+                                match RxSpot::try_from(event) {
+                                    Ok(_rx_spot) => {
+                                        trace!("RX.SPOT");
 
-                                    unimplemented!()
-                                },
-                                Err(e) => {
-                                    error!("Could not convert to RX.SPOT: {}", e);
+                                    },
+                                    Err(e) => {
+                                        error!("Could not convert to RX.SPOT: {}", e);
+                                    }
                                 }
-                            }
+
+                            } 
                         },
                         Err(e) => {
                             // TODO: Try to log the JSON that was in error
