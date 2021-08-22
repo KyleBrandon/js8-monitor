@@ -33,12 +33,6 @@ fn read_commandline() -> ArgMatches<'static> {
             .long("test")
             .help("Runs a test version of the JS8 Monitor")
             .takes_value(true))
-        .arg(Arg::with_name("config")
-            .short("c")
-            .long("config")
-            .value_name("FILE")
-            .help("Sets a custom config file")
-            .takes_value(true))
         .get_matches();
 
     matches
@@ -53,13 +47,22 @@ fn get_js8_address(matches: &ArgMatches) -> String {
         .unwrap()
 }
 
-fn get_api_address(matches: &ArgMatches) -> String {
-    matches.value_of("api_address")
+fn get_api_address(matches: &ArgMatches) -> (String, u16) {
+    let address = matches.value_of("api_address")
         .map(|s| s.to_owned())
         .or(env::var("API_ADDRESS").ok())
         .and_then(|addr| addr.parse().ok())
-        .or_else(|| Some("127.0.0.1:8000".to_string()))
-        .unwrap()
+        .or_else(|| Some("127.0.0.1".to_string()))
+        .unwrap();
+
+    let port = matches.value_of("api_port")
+        .map(|s| s.to_owned())
+        .or(env::var("API_PORT").ok())
+        .and_then(|addr| addr.parse().ok())
+        .or_else(|| Some("8000".to_string()))
+        .unwrap();
+
+    (address, port.parse::<u16>().unwrap())
 }
 
 fn is_in_test_mode(matches: &ArgMatches) -> bool {
@@ -76,12 +79,16 @@ async fn main() {
     log4rs::init_file("log4rs.yml", Default::default()).unwrap();
     let matches = read_commandline();
     let js8_address = get_js8_address(&matches);
-    let api_address = get_api_address(&matches);
+    let api = get_api_address(&matches);
     let is_in_test_mode = is_in_test_mode(&matches);
 
     let monitor_handle = monitor::monitor_factory(js8_address, is_in_test_mode);
 
-    let rocket_handle = rocket::build()
+    let figment = rocket::Config::figment()
+        .merge(("address", api.0))
+        .merge(("port", api.1));
+
+    let rocket_handle = rocket::custom(figment)
         .mount("/", routes![world])
         .launch();
 
