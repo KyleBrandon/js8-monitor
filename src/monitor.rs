@@ -7,18 +7,34 @@ use std::net::UdpSocket;
 use tokio::task::JoinHandle;
 
 
-pub async fn monitor_js8(address: String) -> JoinHandle<()> {
+/*
+trait Monitor {
+    /// Create a new Monitor
+    ///
+    fn new() -> Self {
+
+    }
+
+    /// Start the monitor running.
+    ///
+    fn start(&self) -> JoinHandle<()>;
+
+}
+*/
+
+
+pub async fn monitor_factory(address: String, is_in_test_mode: bool) -> JoinHandle<()> {
 
     tokio::spawn(async move {
-        Monitor::new(address).run();
+        JS8Monitor::new(address).run();
     })
 }
 
-struct Monitor {
+struct JS8Monitor {
     address: String,
 }
 
-impl Monitor {
+impl JS8Monitor {
 
     fn new(address: String) -> Self {
         Self {
