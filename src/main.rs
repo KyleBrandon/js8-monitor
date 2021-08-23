@@ -1,15 +1,13 @@
 #[macro_use] extern crate rocket;
-use std::env;
+
 use clap::{crate_authors, crate_description, crate_name, crate_version, Arg, App, ArgMatches};
+use std::env;
 use tokio::join;
 
+pub mod js8api;
 pub mod js8call;
 pub mod monitor;
-
-#[get("/world")]
-fn world() -> &'static str {
-    "Hello, world!"
-}
+pub mod server;
 
 fn read_commandline() -> ArgMatches<'static> {
     let matches = App::new(crate_name!())
@@ -83,14 +81,7 @@ async fn main() {
     let is_in_test_mode = is_in_test_mode(&matches);
 
     let monitor_handle = monitor::monitor_factory(js8_address, is_in_test_mode);
+    let api_handle = server::server_factory(api.0, api.1, is_in_test_mode);
 
-    let figment = rocket::Config::figment()
-        .merge(("address", api.0))
-        .merge(("port", api.1));
-
-    let rocket_handle = rocket::custom(figment)
-        .mount("/", routes![world])
-        .launch();
-
-    join!(monitor_handle, rocket_handle);
+    join!(monitor_handle, api_handle);
 }

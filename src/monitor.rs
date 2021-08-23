@@ -9,7 +9,7 @@ use tokio::task::JoinHandle;
 pub async fn monitor_factory(address: String, is_in_test_mode: bool) -> JoinHandle<()> {
     tokio::spawn(async move {
         if is_in_test_mode {
-            println!("Create a test monitor");
+            trace!("Create a test monitor");
         } else {
             JS8Monitor::new(address).start();
         }
