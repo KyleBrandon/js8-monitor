@@ -10,8 +10,10 @@ edition = "2018"
 dotenv = "0.13"
 clap = "2.33.*"
 serde = { version = "1.0.*", features = ["derive"] }
-serde_json = "1.0.*"
 log = "0.4"
 log4rs = "1.0.0"
 rocket = { version = "0.5.0-rc.1", features = ["json"] }
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "*", features = ["full"] }
+redis = "*"
+serde_json = "1.0.*"
+uuid = {version = "0.8.2", features = ["v4"]}
