@@ -25,10 +25,10 @@ pub struct RxActivity {
     id: i64,
 }
 
-impl<'buf> TryFrom<Event<'buf>> for RxActivity {
+impl TryFrom<Event> for RxActivity {
     type Error = ParseError;
 
-    fn try_from(e: Event<'buf>) -> Result<RxActivity, Self::Error> {
+    fn try_from(e: Event) -> Result<RxActivity, Self::Error> {
         if *e.message_type() != MessageType::RxActivity {
             return Err(ParseError::InvalidMessageType);
         }

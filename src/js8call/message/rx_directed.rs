@@ -38,10 +38,10 @@ pub struct RxDirected {
 }
 
 
-impl<'buf> TryFrom<Event<'buf>> for RxDirected {
+impl TryFrom<Event> for RxDirected {
     type Error = ParseError;
 
-    fn try_from(e: Event<'buf>) -> Result<RxDirected, Self::Error> {
+    fn try_from(e: Event) -> Result<RxDirected, Self::Error> {
         if *e.message_type() != MessageType::RxDirected {
             return Err(ParseError::InvalidMessageType);
         }

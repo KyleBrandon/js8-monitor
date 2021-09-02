@@ -18,10 +18,10 @@ pub struct Ping {
     id: String,
 }
 
-impl<'buf> TryFrom<Event<'buf>> for Ping {
+impl TryFrom<Event> for Ping {
     type Error = ParseError;
 
-    fn try_from(e: Event<'buf>) -> Result<Ping, Self::Error> {
+    fn try_from(e: Event) -> Result<Ping, Self::Error> {
         if *e.message_type() != MessageType::Ping {
             return Err(ParseError::InvalidMessageType);
         }

@@ -3,11 +3,12 @@
 use clap::{crate_authors, crate_description, crate_name, crate_version, Arg, App, ArgMatches};
 use std::env;
 use tokio::join;
+use js8monitor::monitor;
+use js8api::server;
 
 pub mod js8api;
 pub mod js8call;
-pub mod monitor;
-pub mod server;
+pub mod js8monitor;
 
 fn read_commandline() -> ArgMatches<'static> {
     let matches = App::new(crate_name!())

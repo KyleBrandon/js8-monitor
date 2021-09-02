@@ -13,10 +13,10 @@ pub struct TxFrame {
     id: i64,
 }
 
-impl<'buf> TryFrom<Event<'buf>> for TxFrame {
+impl TryFrom<Event> for TxFrame {
     type Error = ParseError;
 
-    fn try_from(e: Event<'buf>) -> Result<TxFrame, Self::Error> {
+    fn try_from(e: Event) -> Result<TxFrame, Self::Error> {
         if *e.message_type() != MessageType::TxFrame {
             return Err(ParseError::InvalidMessageType);
         }

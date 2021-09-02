@@ -1,4 +1,6 @@
 use crate::js8call::Event;
+use crate::js8call::JS8PubSub;
+use super::pubsub::JS8RedisPubSub; 
 use log::{error, trace};
 use std::convert::TryFrom;
 use std::net::UdpSocket;
@@ -11,7 +13,8 @@ pub async fn monitor_factory(address: String, is_in_test_mode: bool) -> JoinHand
         if is_in_test_mode {
             trace!("Create a test monitor");
         } else {
-            JS8Monitor::new(address).start();
+            let pubsub = JS8RedisPubSub::new();
+            JS8Monitor::new(address, Box::new(pubsub)).start();
         }
     })
 }
@@ -19,6 +22,7 @@ pub async fn monitor_factory(address: String, is_in_test_mode: bool) -> JoinHand
 /// JS8Monitor struct.
 struct JS8Monitor {
     address: String,
+    pubsub: Box<dyn JS8PubSub>
 }
 
 /// Implementation of the JS8Monitor.
@@ -26,14 +30,15 @@ impl JS8Monitor {
 
     /// Create a new JS8Monitor.
     ///
-    fn new(address: String) -> Self {
+    fn new(address: String, pubsub: Box<dyn JS8PubSub>) -> Self {
         Self {
             address,
+            pubsub,
         }
     }
 
     /// Start the monitor processing events from JS8Call and place then on the event queue.
-    fn start(self) {
+    fn start(&self) {
         trace!("Listening on: {}", self.address);
 
         let socket = UdpSocket::bind(&self.address).unwrap();
@@ -44,10 +49,7 @@ impl JS8Monitor {
                     //trace!(target: "monitor-trace", "Message received");
                     match Event::try_from(&buffer[..len]) {
                         Ok(event) => {
-                            // TODO: Place the event on the event queue.
-                            trace!("Event received: {}", event.message_type());
-
-
+                            self.pubsub.publish(&event);
                         },
                         Err(e) => {
                             error!("Invalid message read from JS8Call: {}", e);

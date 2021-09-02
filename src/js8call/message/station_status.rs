@@ -21,10 +21,10 @@ pub struct StationStatus {
     id: String,
 }
 
-impl<'buf> TryFrom<Event<'buf>> for StationStatus {
+impl TryFrom<Event> for StationStatus {
     type Error = ParseError;
 
-    fn try_from(e: Event<'buf>) -> Result<StationStatus, Self::Error> {
+    fn try_from(e: Event) -> Result<StationStatus, Self::Error> {
         if *e.message_type() != MessageType::StationStatus {
             return Err(ParseError::InvalidMessageType);
         }

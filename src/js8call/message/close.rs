@@ -11,10 +11,10 @@ pub struct Close {
     id: String,
 }
 
-impl<'buf> TryFrom<Event<'buf>> for Close {
+impl TryFrom<Event> for Close {
     type Error = ParseError;
 
-    fn try_from(e: Event<'buf>) -> Result<Close, Self::Error> {
+    fn try_from(e: Event) -> Result<Close, Self::Error> {
         if *e.message_type() != MessageType::Close {
             return Err(ParseError::InvalidMessageType);
         }

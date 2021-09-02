@@ -22,10 +22,10 @@ pub struct RxSpot {
     id: i64,
 }
 
-impl<'buf> TryFrom<Event<'buf>> for RxSpot {
+impl TryFrom<Event> for RxSpot {
     type Error = ParseError;
 
-    fn try_from(e: Event<'buf>) -> Result<RxSpot, Self::Error> {
+    fn try_from(e: Event) -> Result<RxSpot, Self::Error> {
         if *e.message_type() != MessageType::RxSpot {
             return Err(ParseError::InvalidMessageType);
         }

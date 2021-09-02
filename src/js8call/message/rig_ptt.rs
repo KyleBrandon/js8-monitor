@@ -16,10 +16,10 @@ pub struct RigPtt {
 }
 
 
-impl<'buf> TryFrom<Event<'buf>> for RigPtt {
+impl TryFrom<Event> for RigPtt {
     type Error = ParseError;
 
-    fn try_from(e: Event<'buf>) -> Result<RigPtt, Self::Error> {
+    fn try_from(e: Event) -> Result<RigPtt, Self::Error> {
         if *e.message_type() != MessageType::RigPtt {
             return Err(ParseError::InvalidMessageType);
         }

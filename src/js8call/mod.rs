@@ -1,4 +1,5 @@
 pub use event::Event;
+pub use event::JS8PubSub;
 pub use parse_error::ParseError;
 
 pub mod event;
