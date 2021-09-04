@@ -24,9 +24,11 @@ pub async fn server_factory(address: String, port: u16, redis_address: String) -
         if *event.message_type() == MessageType::RxActivity {
             
             let activity = RxActivity::try_from(event);
+            trace!("{:?}", activity);
 
         } else if *event.message_type() == MessageType::RxSpot {
             let spot = RxSpot::try_from(event);
+            trace!("{:?}", spot);
 
         } else {
             trace!("WebServer received: {}", event.message_type());

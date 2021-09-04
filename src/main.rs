@@ -51,7 +51,7 @@ fn get_redis_address(matches: &ArgMatches) -> String {
         .map(|s| s.to_owned())
         .or(env::var("REDIS_ADDRESS").ok())
         .and_then(|addr| addr.parse().ok())
-        .or_else(|| Some("redis://127.0.0.1:6379".to_string()))
+        .or_else(|| Some("redis://10.0.4.109:6379".to_string()))
         .unwrap()
 }
 
