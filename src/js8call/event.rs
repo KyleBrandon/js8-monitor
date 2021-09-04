@@ -1,8 +1,9 @@
 use super::parse_error::ParseError;
 use crate::js8call::message::message_type::MessageType;
+use serde::{Serialize, Deserialize};
 use serde_json::Value;
 use std::convert::TryFrom;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str;
 
 
@@ -16,16 +17,42 @@ pub trait JS8PubSub {
     ///     Publish a new JS8 Event
     /// members:
     ///     event - this is the JS8 Event to publish.
-    fn publish(&self, event: &Event);
+    fn publish(&self, event: &Event) -> Result<(), JS8PubSubError>;
 
     /// subscribe
     ///     Subscribe to a new channel to receive JS8 Events
     /// members:
     ///     channel -   the event channel to subscribe to.
     ///     func    -   the function to call when the event is received.
-    fn subscribe(&self, channel: String);
+    fn subscribe<F>(&self, func: F) -> Result<(), JS8PubSubError> where
+        F: FnMut(Event);
 }
 
+pub enum JS8PubSubError {
+    UnableToPublish,
+    UnableToSubscribe,
+}
+
+impl JS8PubSubError {
+    fn message(&self) -> &str {
+        match self {
+            Self::UnableToPublish => "Unable to publish.",
+            Self::UnableToSubscribe => "Unable to subscribe",
+        }
+    }
+}
+
+impl Display for JS8PubSubError {
+    fn fmt(&self, f: &mut Formatter) -> FmtResult {
+        write!(f, "{}", self.message())
+    }
+}
+
+impl Debug for JS8PubSubError {
+    fn fmt(&self, f: &mut Formatter) -> FmtResult {
+        write!(f, "{}", self.message())
+    }
+}
 
 /// Event
 ///     This structure is used to represent an event from JS8Call.
@@ -34,7 +61,7 @@ pub trait JS8PubSub {
 ///     raw_event       -   this is a string representation of the event JSON.
 ///     json            -   this is a serde_json structure
 ///     message_type    -   this is the type of JS8Call message that was triggered.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Event {
     raw_event: String,
     json: Value,

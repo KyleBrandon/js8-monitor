@@ -79,10 +79,10 @@ async fn main() {
     let matches = read_commandline();
     let js8_address = get_js8_address(&matches);
     let api = get_api_address(&matches);
-    let is_in_test_mode = is_in_test_mode(&matches);
+    let _is_in_test_mode = is_in_test_mode(&matches);
 
-    let monitor_handle = monitor::monitor_factory(js8_address, is_in_test_mode);
-    let api_handle = server::server_factory(api.0, api.1, is_in_test_mode);
+    let monitor_handle = monitor::monitor_factory(js8_address);
+    let api_handle = server::server_factory(api.0, api.1);
 
     join!(monitor_handle, api_handle);
 }

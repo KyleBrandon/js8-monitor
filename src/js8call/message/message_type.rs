@@ -2,7 +2,9 @@ use crate::js8call::parse_error::ParseError;
 use log::{error};
 use std::str::FromStr;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
+use serde::{Serialize, Deserialize};
 
+#[derive(Serialize, Deserialize)]
 pub enum MessageType {
     Ping,
     RxDirected,

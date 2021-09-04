@@ -1,55 +1,73 @@
-use crate::js8call::event::{JS8PubSub, Event};
+use crate::js8call::event::{JS8PubSub, JS8PubSubError, Event};
 use log::{error, trace};
-use redis::{Client, Connection, ControlFlow, Msg, PubSubCommands};
+use redis::{Commands, Client, Connection, ControlFlow, Msg, PubSub, PubSubCommands, RedisError};
 
 
+/// JS8RedisPubSub
+///     This will implement the JS8PubSub methods for Redis.
+/// 
 pub struct JS8RedisPubSub {
-
+    address: String,
+    client: Client,
 }
 
+/// JS8RedisPubSub
+///     Behavior for the JS8RedisPubSub struct.
+/// 
 impl JS8RedisPubSub {
 
-    pub fn new() -> Self {
-        Self {
+    pub fn new(address: String) -> Self {
+        let client: Client = redis::Client::open(address.as_str()).unwrap();
 
+        Self {
+            address,
+            client,
         }
 
     }
 }
 
+/// Convert from a RedisError to a JS8PubSubError
+///     
+impl From<RedisError> for JS8PubSubError {
+    fn from(_: RedisError) -> Self {
+        Self::UnableToPublish
+    }
+}
+
+/// Convert from a serde_json::Error to a JS8PubSubError
+/// 
+impl From<serde_json::Error> for JS8PubSubError {
+    fn from(_: serde_json::Error) -> Self {
+        Self::UnableToPublish
+    }
+}
+
 impl JS8PubSub for JS8RedisPubSub {
 
-    fn publish(&self, event: &Event) {
+    fn publish(&self, event: &Event) -> Result<(), JS8PubSubError> {
         trace!("Event received: {}", event.message_type());
-        /*
-        let client: Client = redis::Client::open("redis://127.0.0.1:6379")?;
-        let mut con: Connection = client.get_connection()?;
-    
-        let json: String = serde_json::to_string(&message)?;
-    
-        con.publish(message.channel, json)?;
-        */
-    
+        let mut con: Connection = self.client.get_connection().unwrap();
+        let json: String = serde_json::to_string(event)?;
+        con.publish(String::from("JS8CALL"), json)?;
+
+        Ok(())
     }
 
-    fn subscribe(&self, channel: String) {
-        /*
-        let _ = tokio::spawn(async move {
-            let client: Client = redis::Client::open("redis://127.0.0.1:6379").unwrap();
-            let mut con: Connection = client.get_connection().unwrap();
-    
-            println!("subscribed");
-            let _: () = con.subscribe(&[channel], |msg: Msg| {
-                println!("received msg");
-                let received: String = msg.get_payload().unwrap();
-                let message_obj: Message = serde_json::from_str::<Message>(&received).unwrap();
-    
-                message_handler::handle(message_obj);
-                return ControlFlow::Continue;
-            }).unwrap();
-        });
-        */ 
+
+    fn subscribe<F>(&self, mut func: F) -> Result<(), JS8PubSubError> where
+        F: FnMut(Event) {
+
+        let mut con: Connection = self.client.get_connection().unwrap();
+
+        con.subscribe(&[String::from("JS8CALL")], move |msg: Msg| {
+            let received: String = msg.get_payload().unwrap();
+            let event: Event = serde_json::from_str::<Event>(&received).unwrap();
+
+            func(event);
+
+            return ControlFlow::Continue;
+        })?
     }
 
 }
-
