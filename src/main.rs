@@ -46,6 +46,15 @@ fn get_js8_address(matches: &ArgMatches) -> String {
         .unwrap()
 }
 
+fn get_redis_address(matches: &ArgMatches) -> String {
+    matches.value_of("redis_address")
+        .map(|s| s.to_owned())
+        .or(env::var("REDIS_ADDRESS").ok())
+        .and_then(|addr| addr.parse().ok())
+        .or_else(|| Some("redis://127.0.0.1:6379".to_string()))
+        .unwrap()
+}
+
 fn get_api_address(matches: &ArgMatches) -> (String, u16) {
     let address = matches.value_of("api_address")
         .map(|s| s.to_owned())
@@ -73,16 +82,31 @@ fn is_in_test_mode(matches: &ArgMatches) -> bool {
         .unwrap()
 }
 
+pub struct Configuration {
+    js8_address: String,
+    redis_address: String,
+    api_address: String,
+    api_port: u16,
+}
+
 #[rocket::main]
 async fn main() {
     log4rs::init_file("log4rs.yml", Default::default()).unwrap();
     let matches = read_commandline();
     let js8_address = get_js8_address(&matches);
+    let redis_address = get_redis_address(&matches);
     let api = get_api_address(&matches);
     let _is_in_test_mode = is_in_test_mode(&matches);
 
-    let monitor_handle = monitor::monitor_factory(js8_address);
-    let api_handle = server::server_factory(api.0, api.1);
+    let config = Configuration {
+        js8_address,
+        redis_address,
+        api_address: api.0,
+        api_port: api.1,
+    };
+
+    let monitor_handle = monitor::monitor_factory(config.js8_address, config.redis_address.clone());
+    let api_handle = server::server_factory(config.api_address, config.api_port, config.redis_address.clone());
 
     join!(monitor_handle, api_handle);
 }

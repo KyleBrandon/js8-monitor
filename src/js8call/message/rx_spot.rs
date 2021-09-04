@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
+use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use crate::js8call::event::Event;
 use crate::js8call::parse_error::ParseError;
 use super::message_type::MessageType;
@@ -22,6 +23,12 @@ pub struct RxSpot {
     id: i64,
 }
 
+impl RxSpot {
+    fn message(&self) -> String {
+        format!("{}:{}:{}", self.call, self.dial, self.freq)
+    }
+}
+
 impl TryFrom<Event> for RxSpot {
     type Error = ParseError;
 
@@ -36,3 +43,11 @@ impl TryFrom<Event> for RxSpot {
     }
 
 }
+
+
+impl Display for RxSpot {
+    fn fmt(&self, f: &mut Formatter) -> FmtResult {
+        write!(f, "{}", self.message())
+    }
+}
+

@@ -1,6 +1,6 @@
 use crate::js8call::event::{JS8PubSub, JS8PubSubError, Event};
-use log::{error, trace};
-use redis::{Commands, Client, Connection, ControlFlow, Msg, PubSub, PubSubCommands, RedisError};
+use log::trace;
+use redis::{Commands, Client, Connection, ControlFlow, Msg, PubSubCommands, RedisError};
 
 
 /// JS8RedisPubSub
@@ -17,11 +17,10 @@ pub struct JS8RedisPubSub {
 impl JS8RedisPubSub {
 
     pub fn new(address: String) -> Self {
-        let client: Client = redis::Client::open(address.as_str()).unwrap();
 
         Self {
-            address,
-            client,
+            address: address.clone(),
+            client: redis::Client::open(address).unwrap(),
         }
 
     }
@@ -46,7 +45,7 @@ impl From<serde_json::Error> for JS8PubSubError {
 impl JS8PubSub for JS8RedisPubSub {
 
     fn publish(&self, event: &Event) -> Result<(), JS8PubSubError> {
-        trace!("Event received: {}", event.message_type());
+        trace!("Event published: {}", event.message_type());
         let mut con: Connection = self.client.get_connection().unwrap();
         let json: String = serde_json::to_string(event)?;
         con.publish(String::from("JS8CALL"), json)?;

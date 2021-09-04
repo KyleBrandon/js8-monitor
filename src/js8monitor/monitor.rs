@@ -8,15 +8,13 @@ use tokio::task::JoinHandle;
 
 /// Create a monitor for JS8Call events and run it in a task.
 /// 
-pub async fn monitor_factory(address: String) -> JoinHandle<()> {
+pub async fn monitor_factory(js8_address: String, redis_address: String) -> JoinHandle<()> {
     tokio::spawn(async move {
 
+        let pubsub = JS8RedisPubSub::new(redis_address);
+        trace!("Listening on: {}", js8_address);
 
-        let pubsub = JS8RedisPubSub::new(String::from("redis://127.0.0.1:6379"));
-
-        trace!("Listening on: {}", address);
-
-        let socket = UdpSocket::bind(&address).unwrap();
+        let socket = UdpSocket::bind(&js8_address).unwrap();
         loop {
 
             // TODO: Need shared state to determine if we should exit
