@@ -3,11 +3,11 @@ use log::{trace};
 use rocket::{Error as RocketError};
 use std::convert::TryFrom;
 use crate::js8api::api;
-use crate::js8call::event::{Event, JS8PubSub};
-use crate::js8call::pubsub::JS8RedisPubSub;
-use crate::js8call::message::MessageType;
-use crate::js8call::message::rx_activity::RxActivity;
-use crate::js8call::message::rx_spot::RxSpot;
+use js8event::event::{Event, JS8PubSub};
+use js8event::pubsub::JS8RedisPubSub;
+use js8event::message::MessageType;
+use js8event::message::rx_activity::RxActivity;
+use js8event::message::rx_spot::RxSpot;
 
 
 fn subscribe(redis_address: String) {

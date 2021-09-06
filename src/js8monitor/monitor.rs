@@ -1,6 +1,6 @@
-use crate::js8call::Event;
-use crate::js8call::JS8PubSub;
-use crate::js8call::pubsub::JS8RedisPubSub; 
+use js8event::Event;
+use js8event::JS8PubSub;
+use js8event::pubsub::JS8RedisPubSub; 
 use log::{error, trace};
 use std::convert::TryFrom;
 use std::net::UdpSocket;

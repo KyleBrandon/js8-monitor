@@ -7,7 +7,6 @@ use js8monitor::monitor;
 use js8api::server;
 
 pub mod js8api;
-pub mod js8call;
 pub mod js8monitor;
 
 fn read_commandline() -> ArgMatches<'static> {
