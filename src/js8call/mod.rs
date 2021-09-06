@@ -6,3 +6,4 @@ pub use parse_error::ParseError;
 pub mod event;
 pub mod parse_error;
 pub mod message;
+pub mod pubsub;

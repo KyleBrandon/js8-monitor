@@ -2,6 +2,7 @@ use super::parse_error::ParseError;
 use crate::js8call::message::message_type::MessageType;
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
+use log::debug;
 use std::convert::TryFrom;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str;
@@ -90,6 +91,7 @@ impl TryFrom<&[u8]> for Event {
         let json: Value = serde_json::from_str(raw_event)?;
         let event_type = json["type"].to_string();
         let message_type: MessageType = event_type.parse()?;
+        debug!("{}:{:?}", message_type, json);
 
         Ok(Self {
             raw_event: String::from(raw_event),

@@ -1,6 +1,6 @@
 use crate::js8call::Event;
 use crate::js8call::JS8PubSub;
-use super::pubsub::JS8RedisPubSub; 
+use crate::js8call::pubsub::JS8RedisPubSub; 
 use log::{error, trace};
 use std::convert::TryFrom;
 use std::net::UdpSocket;
@@ -22,7 +22,6 @@ pub async fn monitor_factory(js8_address: String, redis_address: String) -> Join
             let mut buffer = [0; 1024];
             match socket.recv_from(&mut buffer) {
                 Ok((len, _)) => {
-                    //trace!(target: "monitor-trace", "Message received");
                     match Event::try_from(&buffer[..len]) {
                         Ok(event) => {
                             let result = pubsub.publish(&event);
