@@ -105,7 +105,7 @@ async fn main() {
     };
 
     let monitor_handle = monitor::monitor_factory(config.js8_address, config.redis_address.clone());
-    let api_handle = server::server_factory(config.api_address, config.api_port, config.redis_address.clone());
+    let api_handle = server::server_factory(config.api_address, config.api_port);
 
     join!(monitor_handle, api_handle);
 }
