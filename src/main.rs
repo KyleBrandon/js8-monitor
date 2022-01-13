@@ -9,6 +9,9 @@ use js8api::server;
 pub mod js8api;
 pub mod js8monitor;
 
+
+// Read the command line arguments
+// TODO: Move this out
 fn read_commandline() -> ArgMatches<'static> {
     let matches = App::new(crate_name!())
         .version(crate_version!())
